@@ -1,90 +1,116 @@
-# Objetos do Blackjack (cartas, jogador e pack - o conjunto de cartas, o deck)
+from objects import *
+from time import sleep
 
 
-import random
+cash = None
+
+while not isinstance(cash, float):
+    cash = input("Welcome to the HS Casino! How much money would you like to bet?\n")
+    try:
+        float(cash)
+    except ValueError or TypeError:
+        print("\nReally? I'm not in the mood for games, pal. Let's take a deep breath and start from the beginning.")
+        sleep(0.5)
+    else:
+        cash = float(cash)
 
 
-class Card:
+player1 = Player(cash)
+dealer = Player(7000)
 
-    def __init__(self, id):
-        self._id = id
-        
-        if self._id / 13 <= 1:
-            self._suit = "clubs"
-            self._idFactor = 0 
-        
-        elif 1 < self._id / 13 <= 2:
-            self._suit = "diamonds"
-            self._idFactor = 1
-        
-        elif 2 < self._id / 13 <= 3:
-            self._suit = "hearts"
-            self._idFactor = 2  
-        
+if cash < 0:
+    while cash < 0:
+        print("Come on! Negative money? Really? What's next, you'll say you wanna bet 'sofa' euros? Be reasonable.")
+        cash = float(input("Let's try again. How much money would you like to bet?\n"))
+
+if cash < 50:
+    while cash < 50:
+        print("\nI'm sorry. If you're broke, you could have just said that. Minimum bet is 50, pal.")
+        sleep(0.5)
+        cash = float(input("Let's try again. How much money would you like to bet?\n"))
+
+pack = Pack()
+sleep(0.50)
+
+if cash > 10000:
+    print("\nGreat! I must say, that'll keep us going for a while.\n")
+
+if (cash//50) == 1:
+    print("Wow, that'll give you a grand total of... A SINGLE CHIP! I swear to god, if you turn a profit on this...")
+else: 
+    print("\nAlright. That's ", int(cash // 50), "chips. Let's get started, shall we?")
+
+roundCounter = 0
+while player1.chips() > 0 and dealer.chips() > 0:
+    
+    bet = None
+
+    while not isinstance(bet, int):
+        bet = input("\nHow many chips do you wanna put down this round?\n")
+        try:
+            int(bet)
+        except ValueError or TypeError:
+            bet = input("Please remember: you can't bet 'x' chips or anything like that. It's not funny. Let us try again.") 
         else:
-            self._suit = "spades"
-            self._idFactor = 3
-
-        self._value = self._id - self._idFactor * 13
-        
-    def suit():
-        return Card._suit
+            bet = int(bet)
     
-    def value():
-        return Card._value
+    if bet > player1.chips():
+        while bet > player1.chips():
+            bet = input("\nYou can't bet more than you have, genius. So, again: how many will you put down?\n")
+            try:
+                int(bet)
+            except ValueError or TypeError:
+                bet = input("Please remember: you can't bet 'x' chips or anything like that. It's not funny. Let us try again.") 
+            else:
+                bet = int(bet)
     
-    def id():
-        return Card._id
-
-
-class Pack:
-
-    def __init__(self) -> None:
-        self._pack = set()
-        count = 0
-        while count < 7:
-            for i in range(1, 53):
-                self._pack.add(Card(i))
-            count += 1
-
-    def packIds():
-        packIds = []
-        for card in Pack._pack:
-            packIds.append(card.id())
-        return packIds
+    player1.bet(bet)
+    sleep(0.50)
     
-    def pack():
-        return Pack._pack
-            
-
-class Player:
-
-    def __init__(self,cash):
-        self._hand = []
-        self._handValue = sum([card.Value for card in self._hand])
-        self._tricks = []
-        if isinstance(cash, float):
-            self._chips = cash // 50
-        else: 
-            print("That's not cash... come on, the House is not stupid.")
-
-    def bet(n_chips):
-        Player._chips -= n_chips
-        Pot += n_chips
+    print("\nOk, your chips are in the pot now. Hope you don't regret that!")
     
-    def hand():
-        return Player._hand
+    pack.pull(player1)
+    pack.pull(player1)
+    pack.pull(dealer)
+    pack.pull(dealer)
+
+    print("Your hand: ", player1.hand())
+
+    sleep(0.25)
+
+    if dealer.hand_value() == 21:
+        print("\nUh, looks like I'm a natural! But don't worry, you may still draw this...")
+         
+    response = input("\nDo you want to pull another card? [y/n]\n")
+    lowerResp = response.lower()
+    possibleResp = ["y", "yes", "n", "no"]
+
+    if lowerResp not in possibleResp:
+        while lowerResp not in possibleResp:
+            response = input("Come on, I don't have all day! It's a yes or no question. Do you want to draw another card? [y/n]")
+            lowerResp = response.lower()
     
-    def hand_reset():
-        Player._hand = []
+    if lowerResp == "y" or lowerResp == "yes":
+            while lowerResp == ("y" or "yes"):    
+                print(random.choice(["Alright then!", "Ok!", "Alright, sure!"]))
+                pack.pull(player1)
+                sleep(0.5)
+                print("\nYour hand: ", player1.hand())
 
-    def hand_value():
-        return Player._handValue
+                sleep(0.5)
+                if player1.hand_value() > 21:
+                    print("Oops! Looks like it's a bust.")
+                    print("Don't worry though, let's go for another round.")
+                    roundCounter += 1
+                    player1.hand_reset()
+                    break
 
-    def ask_card():
-        id = random.choice(Pack.packIds())
-        for card in Pack.pack():
-            if card.id() == id:
-                Pack.remove(card)
-                Player._Hand.append(card)
-                break
+                response = input(random.choice(["\nSo, wanna go again? The deck's calling [y/n]\n",
+                                                "\nOne more? [y/n]", 
+                                                "\nAnother one? [y/n]"]))
+                lowerResp = response.lower()
+    
+
+
+
+    
