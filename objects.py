@@ -116,19 +116,6 @@ class Player:
     def hand_reset(self):
         self._hand = []
 
-    def hand_value(self):
-        if len(self._hand) == 2:
-            counter = 0
-            for card in self._hand:
-                if card.type() == "figure" or card.type() == "ace":
-                    counter += 1
-            if counter == 2:
-                self._handValue += 21
-
-        for card in self._hand:
-                self._handValue += card.value()
-        return self._handValue
-    
     def chips(self):
         return self._chips
     
@@ -138,21 +125,3 @@ class Player:
             types.append(card.type())
         return types
         
-'''pack = Pack()
-
-player1 = Player(500)
-
-pack.pull(player1)
-pack.pull(player1)
-pack.pull(player1)
-pack.pull(player1)
-pack.pull(player1)
-pack.pull(player1)
-pack.pull(player1)
-pack.pull(player1)
-
-print(player1.hand())
-print(player1.hand_value())
-
-for card in player1.hand():
-    print (card, "Value:", card.value(), "Id", card.id(), sep=";")'''

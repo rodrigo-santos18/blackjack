@@ -72,45 +72,94 @@ while player1.chips() > 0 and dealer.chips() > 0:
     pack.pull(player1)
     pack.pull(player1)
     pack.pull(dealer)
-    pack.pull(dealer)
 
     print("Your hand: ", player1.hand())
+    print("Dealer's hand: ", dealer.hand())
 
     sleep(0.25)
 
-    if dealer.hand_value() == 21:
+    dealerPoints = 0
+    for cards in dealer.hand():
+        dealerPoints += cards.value()
+
+    playerPoints = 0
+    for cards in player1.hand():
+        playerPoints += cards.value()  
+
+    if dealerPoints == 21:
         print("\nUh, looks like I'm a natural! But don't worry, you may still draw this...")
          
-    response = input("\nDo you want to pull another card? [y/n]\n")
-    lowerResp = response.lower()
-    possibleResp = ["y", "yes", "n", "no"]
+    if playerPoints == 21:
+        print("\n A natural, hey? I can still draw this.")
 
-    if lowerResp not in possibleResp:
-        while lowerResp not in possibleResp:
-            response = input("Come on, I don't have all day! It's a yes or no question. Do you want to draw another card? [y/n]")
-            lowerResp = response.lower()
-    
-    if lowerResp == "y" or lowerResp == "yes":
-            while lowerResp == ("y" or "yes"):    
-                print(random.choice(["Alright then!", "Ok!", "Alright, sure!"]))
-                pack.pull(player1)
-                sleep(0.5)
-                print("\nYour hand: ", player1.hand())
+    if playerPoints != 21:
+        response = input("\nDo you want to pull another card? [y/n]\n")
+        lowerResp = response.lower()
+        possibleResp = ["y", "yes", "n", "no"]
 
-                sleep(0.5)
-                if player1.hand_value() > 21:
-                    print("Oops! Looks like it's a bust.")
-                    print("Don't worry though, let's go for another round.")
-                    roundCounter += 1
-                    player1.hand_reset()
-                    break
-
-                response = input(random.choice(["\nSo, wanna go again? The deck's calling [y/n]\n",
-                                                "\nOne more? [y/n]", 
-                                                "\nAnother one? [y/n]"]))
+        if lowerResp not in possibleResp:
+            while lowerResp not in possibleResp:
+                response = input("Come on, I don't have all day! It's a yes or no question. Do you want to draw another card? [y/n]")
                 lowerResp = response.lower()
+
+        if lowerResp == "y" or lowerResp == "yes":
+                while lowerResp == ("y" or "yes"):    
+                    print(random.choice(["Alright then!", "Ok!", "Alright, sure!"]))
+                    pack.pull(player1)
+                    sleep(0.5)
+                    print("\nYour hand: ", player1.hand())
+
+                    sleep(0.5)
+                    playerPoints = 0
+                    for cards in player1.hand():
+                        playerPoints += cards.value() 
+                    if playerPoints > 21:
+                        print("Oops! Looks like it's a bust.")
+                        print("Don't worry though, let's go for another round.")
+                        roundCounter += 1
+                        player1.hand_reset()
+                        break
+
+                    response = input(random.choice(["\nSo, wanna go again? The deck's calling [y/n]\n",
+                                                    "\nOne more? [y/n]", 
+                                                    "\nAnother one? [y/n]"]))
+                    lowerResp = response.lower()
+
+
+    dealerPoints = 0
+    for cards in dealer.hand():
+        dealerPoints += cards.value() 
+        
+    while dealerPoints < 17:
+        pack.pull(dealer)
+        print("The dealer has pulled a card.")
+        sleep(1)        
+        print("\nDealer's hand: ", dealer.hand())
+        sleep(1)        
+        dealerPoints = 0
+        for cards in dealer.hand():
+            dealerPoints += cards.value() 
+        print("Dealer's hand value = ", dealerPoints)
+        sleep(1)
+
+    if dealerPoints > 21:
+        print("\nDamn it! It's a bust. I'll get you next time...")
+        player1.hand_reset()
+        dealer.hand_reset()
+
+    playerPoints = 0
+    for cards in player1.hand():
+        playerPoints += cards.value() 
+
+    if 21 > dealerPoints > playerPoints:
+        print("\n Aha! I win. Let's go for another round.")
+        player1.hand_reset()
+        dealer.hand_reset()
     
+    if dealerPoints < playerPoints < 21:
+        print("\n Beginner's luck. Another round, shall we?")
+        player1.hand_reset()
+        dealer.hand_reset()
 
 
-
-    
+              
